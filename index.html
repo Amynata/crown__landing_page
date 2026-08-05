@@ -37,6 +37,23 @@
     .skip-link { position: fixed; z-index: 100; top: -80px; left: 16px; padding: 12px 18px; background: var(--ivory); color: var(--ink); }
     .skip-link:focus { top: 16px; }
 
+    body.is-loading { overflow: hidden; }
+    .page-loader { --load: 0%; position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; overflow: hidden; color: var(--ink); }
+    .loader-half { position: absolute; z-index: 0; top: 0; bottom: 0; width: 50.1%; background: var(--ivory); transition: transform .85s cubic-bezier(.76,0,.24,1); }
+    .loader-half--left { left: 0; transform-origin: left; }
+    .loader-half--right { right: 0; transform-origin: right; }
+    .loader-content { position: relative; z-index: 2; width: min(82vw,760px); transition: opacity .3s ease, transform .45s ease; }
+    .loader-label { display: flex; justify-content: space-between; margin-bottom: 28px; font-size: .62rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+    .loader-track { position: relative; height: 72px; border-bottom: 1px solid rgba(22,21,19,.55); }
+    .loader-crown { position: absolute; left: var(--load); bottom: 8px; width: 68px; height: auto; filter: brightness(0); transform: translateX(-50%) rotate(-4deg); }
+    .loader-percent { margin: 24px 0 0; font: 400 clamp(5rem,11vw,10rem)/.8 var(--serif); letter-spacing: -.07em; text-align: right; }
+    .page-loader.is-complete .loader-content { opacity: 0; transform: translateY(-18px); }
+    .page-loader.is-complete .loader-half--left { transform: translateX(-100%); }
+    .page-loader.is-complete .loader-half--right { transform: translateX(100%); }
+    .topbar, .deck-stage { transition: opacity .75s ease, transform .9s cubic-bezier(.2,.8,.2,1); }
+    body.is-loading .topbar { opacity: 0; }
+    body.is-loading .deck-stage { opacity: 0; transform: translateY(26px); }
+
     .topbar {
       position: fixed; z-index: 50; inset: 0 0 auto; height: 76px;
       display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
@@ -75,6 +92,9 @@
     .hero-simulation-line { position: absolute; z-index: 2; left: 0; right: 0; top: var(--sim-y); height: 2px; background: var(--ivory); box-shadow: 0 0 12px rgba(22,21,19,.24); }
     .hero-simulation-line::after { content: "↕"; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; display: grid; place-items: center; transform: translate(-50%,-50%); border: 1px solid var(--ink); border-radius: 50%; background: var(--ivory); font-size: .62rem; }
     .hero-screen-foot { display: flex; justify-content: space-between; padding-top: 13px; border-top: 1px solid rgba(22,21,19,.22); font-size: .58rem; }
+    .companion-mode-cycle { display: grid; min-width: 96px; overflow: hidden; }
+    .companion-mode { grid-area: 1 / 1; opacity: 0; transform: translateY(8px); color: var(--terracotta-dark); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .38s ease, transform .38s ease; }
+    .companion-mode.is-active { opacity: 1; transform: translateY(0); }
     .hero-copy { position: absolute; z-index: 6; left: 5vw; top: 64vh; max-width: 610px; margin: 0; font-size: clamp(.92rem,1.15vw,1.08rem); line-height: 1.55; color: var(--stone); }
     .hero-copy strong { color: var(--ink); font-weight: 600; }
     .hero-scroll { position: absolute; z-index: 6; right: 30px; bottom: 30px; display: flex; align-items: center; gap: 12px; font-size: .63rem; letter-spacing: .14em; text-transform: uppercase; }
@@ -112,12 +132,55 @@
     .frictions li { display: flex; align-items: center; gap: 13px; padding: 12px 0; border-bottom: 1px solid rgba(22,21,19,.28); font-size: .95rem; }
     .frictions li::before { content: "•"; color: var(--terracotta-dark); font-size: 1.25rem; line-height: 0; }
     .panel-vision .project-note { max-width: 580px; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(22,21,19,.35); font-size: .9rem; line-height: 1.5; }
-    .phone-hint { position: absolute; z-index: 5; top: 25vh; right: 24vw; color: var(--terracotta-dark); font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; transform: rotate(-4deg); }
+    .phone-hint { position: absolute; z-index: 5; top: 24vh; right: 23vw; width: 280px; color: var(--terracotta-dark); font: 500 clamp(1.15rem,1.65vw,1.7rem)/1.08 var(--serif); letter-spacing: -.025em; transform: rotate(-3deg); }
     .phone-hint::after { content: " ↘"; font-size: 1rem; }
-    .panel-crown { position: absolute; z-index: 3; width: clamp(82px,7vw,116px); aspect-ratio: 137 / 105; background: currentColor; opacity: .92; -webkit-mask: url("assets/crown-transparent.png") center / contain no-repeat; mask: url("assets/crown-transparent.png") center / contain no-repeat; pointer-events: none; }
-    .crown-one { left: 3vw; bottom: 2.5vh; color: var(--ink); transform: rotate(-5deg); }
-    .crown-two { right: 3vw; bottom: 3vh; color: var(--ochre); transform: rotate(4deg); }
-    .crown-three { left: 3vw; bottom: 2.5vh; color: var(--ivory); transform: rotate(-3deg); }
+    .tech-grid { position: absolute; z-index: 1; top: 76px; right: 0; bottom: 0; width: 39%; }
+    .tech-grid::before { content: ""; position: absolute; inset: 0; opacity: .38; background-image: linear-gradient(rgba(159,90,47,.32) 1px, transparent 1px), linear-gradient(90deg, rgba(159,90,47,.32) 1px, transparent 1px); background-size: 34px 34px; -webkit-mask-image: radial-gradient(circle at 58% 50%, #000 0 35%, transparent 74%); mask-image: radial-gradient(circle at 58% 50%, #000 0 35%, transparent 74%); }
+    .tech-grid::after { content: ""; position: absolute; left: 58%; top: 50%; width: 31vw; aspect-ratio: 1; border: 2px solid var(--terracotta); border-radius: 50%; background: rgba(159,90,47,.035); box-shadow: 0 0 0 24px rgba(159,90,47,.055), 0 0 0 58px rgba(159,90,47,.035); transform: translate(-50%,-50%); animation: tech-pulse 4.8s ease-in-out infinite; }
+    .orbit-secondary { position: absolute; left: 58%; top: 50%; width: 35vw; aspect-ratio: 1; border: 1px dashed rgba(140,58,24,.7); border-radius: 50%; transform: translate(-50%,-50%) rotate(-12deg); }
+    .orbit-signal { position: absolute; z-index: 2; left: 58%; top: 50%; width: 31vw; aspect-ratio: 1; transform: translate(-50%,-50%); animation: orbit-signal 13s linear infinite; }
+    .orbit-signal::after { content: ""; position: absolute; top: 50%; right: -6px; width: 11px; height: 11px; border: 2px solid var(--ivory); border-radius: 50%; background: var(--terracotta-dark); box-shadow: 0 0 0 7px rgba(159,90,47,.18); transform: translateY(-50%); }
+    .orbit-node { position: absolute; z-index: 3; padding: 6px 9px; border: 1px solid rgba(140,58,24,.65); background: rgba(239,232,221,.92); color: var(--terracotta-dark); font-size: .55rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; transition: background .35s ease, color .35s ease, transform .35s ease; }
+    .orbit-node.is-active { background: var(--ink); color: var(--ivory); transform: scale(1.08); }
+    .orbit-node--one { left: 58%; top: 9%; transform: translateX(-50%); }
+    .orbit-node--one.is-active { transform: translateX(-50%) scale(1.08); }
+    .orbit-node--two { right: 1%; top: 46%; }
+    .orbit-node--three { left: 58%; bottom: 8%; transform: translateX(-50%); }
+    .orbit-node--three.is-active { transform: translateX(-50%) scale(1.08); }
+    .orbit-node--four { left: 1%; top: 46%; }
+    .phone-brackets { position: absolute; z-index: 4; right: 1.5vw; bottom: -1vh; width: 30vw; height: 82vh; pointer-events: none; }
+    .phone-bracket { position: absolute; width: 34px; height: 34px; border-color: var(--terracotta-dark); opacity: .9; }
+    .phone-bracket--tl { top: 0; left: 0; border-top: 2px solid; border-left: 2px solid; }
+    .phone-bracket--tr { top: 0; right: 0; border-top: 2px solid; border-right: 2px solid; }
+    .phone-bracket--bl { bottom: 0; left: 0; border-bottom: 2px solid; border-left: 2px solid; }
+    .phone-bracket--br { right: 0; bottom: 0; border-right: 2px solid; border-bottom: 2px solid; }
+    @keyframes tech-pulse { 0%,100% { transform: translate(-50%,-50%) scale(.96); opacity: .72; } 50% { transform: translate(-50%,-50%) scale(1.04); opacity: 1; } }
+    @keyframes orbit-signal { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .panel-crown { position: absolute; z-index: 3; width: clamp(82px,7vw,116px); height: auto; opacity: .92; pointer-events: none; }
+    .crown-one { left: 3vw; bottom: 2.5vh; filter: brightness(0); animation: crown-walk-one 4.6s ease-in-out infinite; }
+    .crown-two { right: 3vw; bottom: 3vh; filter: brightness(0) saturate(100%) invert(52%) sepia(69%) saturate(780%) hue-rotate(350deg) brightness(96%) contrast(88%); animation: crown-walk-two 4.9s ease-in-out -.8s infinite; }
+    .crown-three { left: 3vw; bottom: 2.5vh; filter: brightness(0) invert(94%) sepia(12%) saturate(365%) hue-rotate(345deg) brightness(103%) contrast(91%); animation: crown-walk-three 4.4s ease-in-out -.4s infinite; }
+    @keyframes crown-walk-one {
+      0%,8% { transform: translate(0,0) rotate(-5deg) scaleX(1); }
+      42% { transform: translate(18px,-8px) rotate(-1deg) scaleX(1); }
+      48% { transform: translate(18px,-8px) rotate(1deg) scaleX(-1); }
+      88% { transform: translate(0,0) rotate(4deg) scaleX(-1); }
+      94%,100% { transform: translate(0,0) rotate(-5deg) scaleX(1); }
+    }
+    @keyframes crown-walk-two {
+      0%,8% { transform: translate(0,0) rotate(4deg) scaleX(1); }
+      42% { transform: translate(-22px,-5px) rotate(0deg) scaleX(1); }
+      48% { transform: translate(-22px,-5px) rotate(-2deg) scaleX(-1); }
+      88% { transform: translate(0,0) rotate(-5deg) scaleX(-1); }
+      94%,100% { transform: translate(0,0) rotate(4deg) scaleX(1); }
+    }
+    @keyframes crown-walk-three {
+      0%,8% { transform: translate(0,0) rotate(-3deg) scaleX(1); opacity: .88; }
+      42% { transform: translate(20px,-6px) rotate(2deg) scaleX(1); opacity: 1; }
+      48% { transform: translate(20px,-6px) rotate(-1deg) scaleX(-1); opacity: 1; }
+      88% { transform: translate(0,0) rotate(3deg) scaleX(-1); opacity: .9; }
+      94%,100% { transform: translate(0,0) rotate(-3deg) scaleX(1); opacity: .88; }
+    }
     .panel-vision .panel-inner, .panel-vision .hero-phone, .panel-vision .phone-hint { z-index: 2; }
     .panel-vision .hero-phone { right: 3vw; bottom: -4vh; width: min(27vw, 410px); height: 76vh; transform: none; }
     .panel .hero-screen h2 { margin: 26px 0 10px; font: 400 clamp(1.8rem,2.7vw,2.7rem)/.95 var(--serif); letter-spacing: -.04em; }
@@ -220,6 +283,8 @@
       .panel-vision .panel-inner { width: 100%; padding-bottom: 640px; }
       .panel-vision .hero-phone { right: 50%; bottom: 50px; width: min(76vw,380px); height: 560px; transform: translateX(50%); }
       .phone-hint { display: none; }
+      .tech-grid { display: none; }
+      .phone-brackets { display: none; }
       .panel-crown { width: 82px; }
       .crown-one, .crown-three { left: 20px; bottom: 18px; }
       .crown-two { right: 20px; bottom: 62px; }
@@ -253,6 +318,8 @@
       .study h2 { font-size: clamp(3.8rem,16vw,5.2rem); }
       .form-shell { box-shadow: 8px 8px 0 var(--ink); }
       .footer-inner { align-items: start; flex-direction: column; }
+      .loader-content { width: calc(100% - 40px); }
+      .loader-crown { width: 56px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -262,6 +329,12 @@
       .hero-phone { transform: none !important; }
       .hero-simulation { --sim-y: 50%; animation: none !important; }
       .panel, .layer-one, .layer-two, .projection-frame { transform: none !important; }
+      .page-loader { display: none; }
+      body.is-loading { overflow: auto; }
+      body.is-loading .topbar, body.is-loading .deck-stage { opacity: 1; transform: none; }
+      .tech-grid::after { animation: none; }
+      .orbit-signal { animation: none; }
+      .panel-crown { animation: none !important; }
     }
 
     @media (max-width: 900px) and (prefers-reduced-motion: reduce) {
@@ -269,7 +342,16 @@
     }
   </style>
 </head>
-<body>
+<body class="is-loading">
+  <div class="page-loader" role="status" aria-label="Chargement de la page Crown On Me">
+    <span class="loader-half loader-half--left" aria-hidden="true"></span>
+    <span class="loader-half loader-half--right" aria-hidden="true"></span>
+    <div class="loader-content" aria-hidden="true">
+      <div class="loader-label"><span>Crown On Me</span><span>Le parcours se dessine</span></div>
+      <div class="loader-track"><img class="loader-crown" src="assets/crown-transparent.png" alt=""></div>
+      <p class="loader-percent">00%</p>
+    </div>
+  </div>
   <a class="skip-link" href="#contenu">Aller au contenu</a>
   <div class="scroll-meter" aria-hidden="true"></div>
   <header class="topbar">
@@ -297,8 +379,22 @@
               </ul>
               <p class="project-note"><strong>Crown On Me est un projet en recherche</strong> consacré aux décisions capillaires des femmes aux cheveux texturés. Nous voulons comprendre vos expériences avant de construire la solution.</p>
             </div>
-            <span class="phone-hint" aria-hidden="true">Une piste parmi d’autres</span>
-            <span class="panel-crown crown-one" aria-hidden="true"></span>
+            <span class="phone-hint">Plus qu’une simulation, une vision du parcours capillaire dans son ensemble.</span>
+            <span class="tech-grid" aria-hidden="true">
+              <span class="orbit-secondary"></span>
+              <span class="orbit-signal"></span>
+              <span class="orbit-node orbit-node--one is-active">Comprendre</span>
+              <span class="orbit-node orbit-node--two">Choisir</span>
+              <span class="orbit-node orbit-node--three">Échanger</span>
+              <span class="orbit-node orbit-node--four">Entretenir</span>
+            </span>
+            <span class="phone-brackets" aria-hidden="true">
+              <span class="phone-bracket phone-bracket--tl"></span>
+              <span class="phone-bracket phone-bracket--tr"></span>
+              <span class="phone-bracket phone-bracket--bl"></span>
+              <span class="phone-bracket phone-bracket--br"></span>
+            </span>
+            <img class="panel-crown crown-one" src="assets/crown-transparent.png" alt="" aria-hidden="true">
             <div class="hero-phone" aria-label="Représentation conceptuelle d’une piste de simulation">
               <div class="hero-screen">
                 <div class="hero-screen-top"><span>CROWN ON ME</span><span>RECHERCHE</span></div>
@@ -309,7 +405,15 @@
                   <img class="projected" src="assets/portrait-projection.png" alt="">
                   <span class="hero-simulation-line"></span>
                 </div>
-                <div class="hero-screen-foot"><span>Piste à explorer</span><span>01 / 04</span></div>
+                <div class="hero-screen-foot">
+                  <span class="companion-mode-cycle" aria-label="Comprendre, choisir, échanger et entretenir">
+                    <span class="companion-mode is-active">Comprendre</span>
+                    <span class="companion-mode">Choisir</span>
+                    <span class="companion-mode">Échanger</span>
+                    <span class="companion-mode">Entretenir</span>
+                  </span>
+                  <span>01 / 04</span>
+                </div>
               </div>
             </div>
           </article>
@@ -323,7 +427,7 @@
               <p class="vision-copy">Crown On Me veut construire une expérience plus juste, personnelle et valorisante, au croisement de la technologie, de la beauté et de la culture.</p>
             </div>
             <figure class="texture-image"><img src="assets/portrait-vision.png" alt="Portrait d’une femme aux cheveux texturés portant une coiffure tressée."></figure>
-            <span class="panel-crown crown-two" aria-hidden="true"></span>
+            <img class="panel-crown crown-two" src="assets/crown-transparent.png" alt="" aria-hidden="true">
           </article>
 
           <article class="panel panel-projection">
@@ -346,7 +450,7 @@
               <span class="projection-divider" aria-hidden="true"></span>
               <span class="projection-caption">Une hypothèse à questionner parmi d’autres.</span>
             </div>
-            <span class="panel-crown crown-three" aria-hidden="true"></span>
+            <img class="panel-crown crown-three" src="assets/crown-transparent.png" alt="" aria-hidden="true">
           </article>
         </div>
       </div>
@@ -383,10 +487,70 @@
 
   <script>
     (() => {
+      const loader = document.querySelector('.page-loader');
+      const loaderPercent = document.querySelector('.loader-percent');
+      const loaderStart = performance.now();
+      const reducedAtStart = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const criticalSources = ['assets/portrait-hero.png', 'assets/portrait-projection.png', 'assets/portrait-vision.png'];
+      let criticalLoaded = 0;
+      let fontsLoaded = !document.fonts;
+      let displayedLoad = reducedAtStart ? 100 : 0;
+      let loaderFinished = false;
+
+      criticalSources.forEach((source) => {
+        const asset = new Image();
+        const markLoaded = () => { criticalLoaded += 1; };
+        asset.onload = markLoaded;
+        asset.onerror = markLoaded;
+        asset.src = source;
+      });
+      if (document.fonts) document.fonts.ready.then(() => { fontsLoaded = true; });
+
+      function finishLoader() {
+        if (loaderFinished) return;
+        loaderFinished = true;
+        loader.style.setProperty('--load', '100%');
+        loaderPercent.textContent = '100%';
+        document.body.classList.remove('is-loading');
+        document.body.classList.add('page-ready');
+        loader.classList.add('is-complete');
+        setTimeout(() => loader.remove(), reducedAtStart ? 0 : 900);
+      }
+
+      function updateLoader(now) {
+        if (loaderFinished) return;
+        if (reducedAtStart) { finishLoader(); return; }
+        const elapsed = now - loaderStart;
+        const assetProgress = (criticalLoaded / criticalSources.length) * 76;
+        const fontProgress = fontsLoaded ? 16 : 0;
+        const pacedProgress = Math.min(88, elapsed / 1350 * 88);
+        const ready = criticalLoaded === criticalSources.length && fontsLoaded;
+        const targetLoad = ready && elapsed > 1050 ? 100 : Math.min(94, Math.max(assetProgress + fontProgress, pacedProgress));
+        displayedLoad += (targetLoad - displayedLoad) * .075;
+        if (targetLoad === 100 && displayedLoad > 99.2) { finishLoader(); return; }
+        loader.style.setProperty('--load', `${Math.min(100, displayedLoad)}%`);
+        loaderPercent.textContent = `${String(Math.floor(displayedLoad)).padStart(2,'0')}%`;
+        if (elapsed > 2800) { criticalLoaded = criticalSources.length; fontsLoaded = true; }
+        requestAnimationFrame(updateLoader);
+      }
+      requestAnimationFrame(updateLoader);
+
       const root = document.documentElement;
       const deckWrap = document.querySelector('.deck-wrap');
       const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
       const mobile = matchMedia('(max-width: 900px)');
+      const companionModes = [...document.querySelectorAll('.companion-mode')];
+      const companionNodes = [...document.querySelectorAll('.orbit-node')];
+      let companionModeIndex = 0;
+      if (!reduceMotion.matches && companionModes.length) {
+        setInterval(() => {
+          companionModes[companionModeIndex].classList.remove('is-active');
+          companionNodes[companionModeIndex]?.classList.remove('is-active');
+          companionModeIndex = (companionModeIndex + 1) % companionModes.length;
+          companionModes[companionModeIndex].classList.add('is-active');
+          companionNodes[companionModeIndex]?.classList.add('is-active');
+        }, 1800);
+      }
       let target = 0;
       let current = 0;
       let raf = 0;
