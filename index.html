@@ -21,160 +21,236 @@
       --stone: #645d57;
       --serif: "Bodoni Moda", Didot, "Times New Roman", serif;
       --sans: "Manrope", Arial, sans-serif;
-      --page: min(100% - 48px, 1320px);
+      --page: min(100% - 48px, 1380px);
+      --progress: 0;
+      --hero-progress: 0;
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      background: var(--ivory);
-      font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.6;
-    }
+    body { margin: 0; color: var(--ink); background: var(--ivory); font: 400 16px/1.55 var(--sans); overflow-x: clip; }
     img { display: block; width: 100%; }
     a { color: inherit; }
     button, a { -webkit-tap-highlight-color: transparent; }
-    :focus-visible { outline: 3px solid var(--terracotta-dark); outline-offset: 4px; }
-
-    .skip-link {
-      position: fixed; left: 16px; top: -80px; z-index: 99;
-      background: var(--ink); color: var(--ivory); padding: 12px 18px;
-    }
-    .skip-link:focus { top: 16px; }
+    :focus-visible { outline: 3px solid var(--ochre); outline-offset: 4px; }
     .container { width: var(--page); margin-inline: auto; }
+    .skip-link { position: fixed; z-index: 100; top: -80px; left: 16px; padding: 12px 18px; background: var(--ivory); color: var(--ink); }
+    .skip-link:focus { top: 16px; }
 
-    .nav {
-      height: 88px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 1px solid rgba(22,21,19,.18);
+    .topbar {
+      position: fixed; z-index: 50; inset: 0 0 auto; height: 76px;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+      padding: 0 30px; color: var(--ink); background: rgba(239,232,221,.82); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(22,21,19,.12);
+      pointer-events: none;
     }
-    .brand { font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.35rem); letter-spacing: .04em; text-decoration: none; }
-    .nav-cta, .button {
-      min-height: 48px; display: inline-flex; align-items: center; justify-content: center;
-      padding: 0 22px; border: 1px solid var(--ink); background: var(--ink); color: var(--ivory);
-      font: 600 .78rem/1 var(--sans); letter-spacing: .04em; text-decoration: none;
-      transition: background .18s ease, color .18s ease, transform .18s ease;
+    .topbar > * { pointer-events: auto; }
+    .brand { font-family: var(--serif); font-size: 1.15rem; letter-spacing: .05em; text-decoration: none; }
+    .top-status { font-size: .62rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+    .top-cta { justify-self: end; min-height: 42px; display: inline-flex; align-items: center; padding: 0 16px; border: 1px solid currentColor; font-size: .68rem; font-weight: 600; text-decoration: none; letter-spacing: .05em; }
+    .scroll-meter { position: fixed; z-index: 51; left: 0; top: 0; width: calc(var(--progress) * 100%); height: 3px; background: var(--ochre); transform-origin: left; }
+
+    .hero { height: 165vh; background: radial-gradient(circle at 50% 88%, #e0b48c 0, var(--paper) 28%, var(--ivory) 64%); color: var(--ink); }
+    .hero-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+    .hero-title {
+      position: absolute; z-index: 4; top: 20vh; left: 5vw; width: min(58vw, 900px); margin: 0;
+      transform: translateY(calc(var(--hero-progress) * -42px));
+      font: 400 clamp(3.8rem, 6.1vw, 6.5rem)/.9 var(--serif); letter-spacing: -.065em; text-align: left;
+      will-change: transform;
     }
-    .nav-cta:hover, .button:hover { background: transparent; color: var(--ink); transform: translateY(-2px); }
+    .hero-title .accent { color: var(--terracotta-dark); }
+    .hero-kicker { position: absolute; z-index: 5; top: 12vh; left: 5vw; margin: 0; font-size: .66rem; font-weight: 600; letter-spacing: .17em; text-transform: uppercase; white-space: nowrap; }
+    .hero-phone {
+      position: absolute; z-index: 4; right: 7vw; bottom: -10vh; width: min(29vw, 410px); height: 70vh; padding: 10px;
+      transform: translateY(calc(var(--hero-progress) * -88px)) scale(calc(.94 + var(--hero-progress) * .06));
+      border: 2px solid var(--ink); border-radius: 46px; background: var(--ink); box-shadow: 20px 24px 0 rgba(159,90,47,.35); will-change: transform;
+    }
+    .hero-screen { height: 100%; padding: 24px; border-radius: 34px; overflow: hidden; background: var(--ivory); }
+    .hero-screen-top { display: flex; justify-content: space-between; font-size: .58rem; font-weight: 600; letter-spacing: .1em; }
+    .hero-screen h2 { margin: 26px 0 10px; font: 400 clamp(1.8rem,2.7vw,2.7rem)/.95 var(--serif); letter-spacing: -.04em; }
+    .hero-screen p { margin: 0; color: var(--stone); font-size: .67rem; }
+    @property --sim-y { syntax: "<percentage>"; inherits: true; initial-value: 48%; }
+    .hero-simulation { --sim-y: 48%; position: relative; height: 48%; margin: 24px 0 20px; overflow: hidden; background: var(--paper); cursor: ns-resize; }
+    .hero-simulation img { position: absolute; inset: 0; height: 100%; object-fit: cover; object-position: 50% 28%; }
+    .hero-simulation .projected { clip-path: inset(0 0 calc(100% - var(--sim-y)) 0); }
+    .hero-simulation-line { position: absolute; z-index: 2; left: 0; right: 0; top: var(--sim-y); height: 2px; background: var(--ivory); box-shadow: 0 0 12px rgba(22,21,19,.24); }
+    .hero-simulation-line::after { content: "↕"; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; display: grid; place-items: center; transform: translate(-50%,-50%); border: 1px solid var(--ink); border-radius: 50%; background: var(--ivory); font-size: .62rem; }
+    .hero-screen-foot { display: flex; justify-content: space-between; padding-top: 13px; border-top: 1px solid rgba(22,21,19,.22); font-size: .58rem; }
+    .hero-copy { position: absolute; z-index: 6; left: 5vw; top: 64vh; max-width: 610px; margin: 0; font-size: clamp(.92rem,1.15vw,1.08rem); line-height: 1.55; color: var(--stone); }
+    .hero-copy strong { color: var(--ink); font-weight: 600; }
+    .hero-scroll { position: absolute; z-index: 6; right: 30px; bottom: 30px; display: flex; align-items: center; gap: 12px; font-size: .63rem; letter-spacing: .14em; text-transform: uppercase; }
+    .hero-scroll::before { content: ""; width: 52px; height: 1px; background: currentColor; }
+    .brush { position: absolute; z-index: 3; background: var(--terracotta); opacity: .88; }
+    .brush-a { width: 23vw; height: 7vh; right: 2vw; left: auto; top: 32vh; transform: rotate(-8deg); clip-path: polygon(0 31%, 13% 8%, 31% 27%, 49% 2%, 66% 24%, 84% 7%, 100% 28%, 95% 82%, 69% 69%, 51% 97%, 24% 72%, 4% 91%); }
+    .brush-b { display: none; }
 
-    .hero { min-height: calc(100vh - 88px); display: grid; grid-template-columns: .95fr 1.05fr; align-items: stretch; }
-    .hero-copy { display: flex; flex-direction: column; justify-content: center; padding: 80px clamp(32px, 6vw, 96px) 80px max(24px, calc((100vw - 1320px) / 2)); }
-    .eyebrow { margin: 0 0 18px; color: var(--terracotta-dark); font-size: .72rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
-    h1, h2, h3, p { margin-top: 0; }
-    h1, h2, h3 { font-family: var(--serif); font-weight: 400; }
-    h1 { max-width: 720px; margin-bottom: 30px; font-size: clamp(4rem, 7.4vw, 7rem); line-height: .9; letter-spacing: -.055em; }
-    .hero-copy > p:not(.eyebrow) { max-width: 560px; margin-bottom: 36px; color: var(--stone); font-size: clamp(1rem, 1.35vw, 1.18rem); }
-    .hero-art { position: relative; min-height: 640px; overflow: hidden; background: var(--paper); }
-    .hero-art img { height: 100%; object-fit: cover; object-position: 50% 42%; }
-    .hero-art::after { content: ""; position: absolute; inset: auto -3% -8% 22%; height: 20%; background: var(--ivory); clip-path: polygon(0 53%, 9% 38%, 23% 45%, 36% 22%, 49% 37%, 63% 15%, 78% 34%, 91% 11%, 100% 22%, 100% 100%, 0 100%); }
-    .crown { position: absolute; right: 34px; top: 30px; width: 68px; z-index: 2; color: var(--ink); }
+    .deck-wrap { position: relative; height: 300vh; background: var(--ivory); }
+    .deck-stage { position: sticky; top: 0; height: 100vh; overflow: hidden; background: var(--ivory); }
+    .deck-label { display: none; }
+    .deck-count { position: absolute; z-index: 20; right: 28px; top: 94px; font: 400 1rem/1 var(--serif); }
+    .deck { position: absolute; inset: 0; }
+    .panel {
+      position: absolute; top: 0; left: 0; width: 78vw; min-width: 0; height: 100vh;
+      overflow: hidden; border-right: 1px solid rgba(22,21,19,.24); box-shadow: -18px 0 34px rgba(22,21,19,.1);
+      transform: translate3d(var(--panel-x),0,0); will-change: transform;
+    }
+    .panel:nth-child(1) { --panel-x: 0px; z-index: 1; }
+    .panel:nth-child(2) { --panel-x: 78vw; z-index: 2; }
+    .panel:nth-child(3) { --panel-x: 89vw; z-index: 3; }
+    .panel-inner { height: 100%; padding: 120px clamp(34px, 4vw, 68px) 46px; display: flex; flex-direction: column; }
+    .panel-no { margin-bottom: clamp(48px, 9vh, 92px); font-size: .62rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+    .panel h2 { max-width: 700px; margin: 0 0 30px; font: 400 clamp(4rem, 7vw, 7.2rem)/.88 var(--serif); letter-spacing: -.06em; }
+    .panel p { max-width: 560px; margin: 0; font-size: clamp(.9rem, 1.25vw, 1.08rem); }
+    .panel-footer { max-width: 560px; margin-top: auto; padding-top: 22px; border-top: 1px solid currentColor; font-size: .78rem; font-weight: 600; line-height: 1.45; }
 
-    .vision { display: grid; grid-template-columns: 1fr 1fr; min-height: 720px; background: var(--ink); color: var(--ivory); }
-    .vision-image { position: relative; overflow: hidden; }
-    .vision-image img { height: 100%; object-fit: cover; object-position: 48% center; filter: saturate(.9); }
-    .vision-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 70%, rgba(22,21,19,.5)); }
-    .vision-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(64px, 9vw, 132px); }
-    .vision h2 { max-width: 700px; margin-bottom: 32px; font-size: clamp(3.6rem, 6vw, 6rem); line-height: .93; letter-spacing: -.045em; }
-    .vision p:not(.eyebrow) { max-width: 610px; color: #d9d0c4; font-size: clamp(1rem, 1.5vw, 1.2rem); }
+    .panel-vision { background: var(--ivory); color: var(--ink); }
+    .panel-vision .panel-inner { width: 62%; padding-right: 30px; }
+    .panel-vision h2 { max-width: 760px; margin-bottom: 24px; font-size: clamp(3.55rem, 5.25vw, 5.75rem); }
+    .panel-vision h2 .accent { color: var(--terracotta-dark); }
+    .fragmented-title { margin: 0 0 8px; color: var(--terracotta-dark); font-size: .66rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .frictions-intro { max-width: 570px; margin: 0 0 12px; color: var(--stone); font-size: .9rem; line-height: 1.45; }
+    .frictions { max-width: 570px; margin: 0; padding: 0; list-style: none; border-top: 1px solid rgba(22,21,19,.42); }
+    .frictions li { display: flex; align-items: center; gap: 13px; padding: 12px 0; border-bottom: 1px solid rgba(22,21,19,.28); font-size: .95rem; }
+    .frictions li::before { content: "•"; color: var(--terracotta-dark); font-size: 1.25rem; line-height: 0; }
+    .panel-vision .project-note { max-width: 580px; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(22,21,19,.35); font-size: .9rem; line-height: 1.5; }
+    .phone-hint { position: absolute; z-index: 5; top: 25vh; right: 24vw; color: var(--terracotta-dark); font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; transform: rotate(-4deg); }
+    .phone-hint::after { content: " ↘"; font-size: 1rem; }
+    .panel-crown { position: absolute; z-index: 3; width: clamp(82px,7vw,116px); aspect-ratio: 137 / 105; background: currentColor; opacity: .92; -webkit-mask: url("assets/crown-transparent.png") center / contain no-repeat; mask: url("assets/crown-transparent.png") center / contain no-repeat; pointer-events: none; }
+    .crown-one { left: 3vw; bottom: 2.5vh; color: var(--ink); transform: rotate(-5deg); }
+    .crown-two { right: 3vw; bottom: 3vh; color: var(--ochre); transform: rotate(4deg); }
+    .crown-three { left: 3vw; bottom: 2.5vh; color: var(--ivory); transform: rotate(-3deg); }
+    .panel-vision .panel-inner, .panel-vision .hero-phone, .panel-vision .phone-hint { z-index: 2; }
+    .panel-vision .hero-phone { right: 3vw; bottom: -4vh; width: min(27vw, 410px); height: 76vh; transform: none; }
+    .panel .hero-screen h2 { margin: 26px 0 10px; font: 400 clamp(1.8rem,2.7vw,2.7rem)/.95 var(--serif); letter-spacing: -.04em; }
+    .panel .hero-screen p { max-width: none; margin: 0; color: var(--stone); font-size: .67rem; }
+    .panel .hero-screen-foot { font-size: .58rem; }
+    .vision-image { position: absolute; right: -10%; bottom: 0; width: 60%; height: 62%; opacity: calc(.45 + var(--progress) * .35); }
+    .vision-image img { height: 100%; object-fit: cover; object-position: 52% center; filter: saturate(.82) contrast(1.02); }
+    .vision-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg,var(--ivory),transparent 46%); }
 
-    .app-section { position: relative; padding: clamp(92px, 12vw, 170px) 0; overflow: hidden; }
-    .app-grid { display: grid; grid-template-columns: .92fr 1.08fr; gap: clamp(56px, 9vw, 140px); align-items: center; }
-    .app-copy h2 { max-width: 680px; margin-bottom: 30px; font-size: clamp(3.7rem, 6.4vw, 6.6rem); line-height: .92; letter-spacing: -.05em; }
-    .app-copy > p:not(.eyebrow) { max-width: 560px; color: var(--stone); font-size: clamp(1rem, 1.4vw, 1.16rem); }
-    .app-note { margin-top: 32px; padding-left: 18px; border-left: 2px solid var(--terracotta-dark); font-size: .84rem !important; }
-    .research-moments { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; max-width: 620px; margin: 36px 0 0; padding: 0; list-style: none; border-top: 1px solid rgba(22,21,19,.25); }
-    .research-moments li { padding: 18px 0; border-bottom: 1px solid rgba(22,21,19,.25); }
-    .research-moments strong { display: block; margin-bottom: 4px; font-family: var(--serif); font-size: 1.55rem; font-weight: 400; }
-    .research-moments span { color: var(--stone); font-size: .78rem; line-height: 1.45; }
-    .device-stage { position: relative; min-height: 680px; display: grid; place-items: center; }
-    .device-stage::before { content: ""; position: absolute; width: 76%; aspect-ratio: 1; border-radius: 50%; background: var(--ochre); opacity: .82; }
-    .device-stage::after { content: ""; position: absolute; width: 84%; height: 28%; left: 2%; bottom: 8%; background: var(--terracotta-dark); clip-path: polygon(0 30%, 18% 10%, 34% 36%, 50% 15%, 68% 38%, 84% 8%, 100% 25%, 96% 82%, 76% 72%, 57% 93%, 38% 70%, 17% 89%, 4% 72%); }
-    .phone { position: relative; z-index: 2; width: min(340px, 72vw); padding: 12px; border: 2px solid var(--ink); border-radius: 42px; background: var(--ink); box-shadow: 24px 28px 0 rgba(82,52,35,.45); transform: rotate(3deg); }
-    .screen { min-height: 610px; padding: 24px 22px; border-radius: 30px; background: var(--ivory); overflow: hidden; }
-    .screen-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 42px; font-size: .63rem; font-weight: 600; letter-spacing: .1em; }
-    .mini-crown { width: 34px; }
-    .screen-kicker { margin-bottom: 10px; color: var(--terracotta-dark); font-size: .6rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
-    .screen h3 { margin-bottom: 14px; font-size: 2.55rem; line-height: .93; letter-spacing: -.04em; }
-    .screen > p { color: var(--stone); font-size: .76rem; line-height: 1.55; }
-    .hair-map { position: relative; height: 210px; margin: 28px 0 24px; background: linear-gradient(90deg, #d7c3ac 0 49.6%, var(--paper) 49.6% 100%); overflow: hidden; }
-    .hair-map::before { content: ""; position: absolute; width: 170px; height: 170px; left: 50%; top: 50%; transform: translate(-50%,-50%); border-radius: 48% 52% 50% 50%; background: repeating-radial-gradient(circle at 50% 48%, var(--ink) 0 2px, transparent 2px 7px); }
-    .hair-map::after { content: ""; position: absolute; left: calc(50% - 1px); top: 12px; bottom: 12px; width: 2px; background: var(--ivory); box-shadow: 0 0 0 1px rgba(22,21,19,.22); }
-    .projection-handle { position: absolute; z-index: 2; left: 50%; top: 50%; width: 30px; height: 30px; display: grid; place-items: center; transform: translate(-50%,-50%); border-radius: 50%; background: var(--ivory); border: 1px solid var(--ink); font-size: .58rem; }
-    .signal-list { display: grid; gap: 10px; }
-    .signal { display: flex; justify-content: space-between; gap: 14px; padding: 11px 0; border-top: 1px solid rgba(22,21,19,.2); font-size: .68rem; }
-    .signal span:last-child { color: var(--terracotta-dark); font-weight: 600; }
-    .prototype-tag { position: absolute; z-index: 3; left: 2%; top: 17%; padding: 13px 16px; background: var(--ivory); border: 1px solid var(--ink); color: var(--ink); font-size: .62rem; font-weight: 600; letter-spacing: .14em; transform: rotate(-6deg); }
+    .panel-moments { background: var(--ink); color: var(--ivory); }
+    .panel-moments .panel-inner { width: 51%; margin-left: 49%; padding-left: clamp(34px, 4vw, 64px); }
+    .panel-moments h2 { max-width: 680px; margin-bottom: 10px; font-size: clamp(3.7rem, 5.15vw, 5.55rem); }
+    .panel-moments p { color: #d8cec3; }
+    .vision-subtitle { max-width: 520px; margin: 0 0 30px; color: var(--ochre); font: 400 clamp(1.55rem,2.15vw,2.35rem)/1 var(--serif); letter-spacing: -.025em; }
+    .vision-copy + .vision-copy { margin-top: 18px; }
+    .moments { display: grid; grid-template-columns: 1fr 1fr; margin-top: 28px; border-top: 1px solid currentColor; }
+    .moment { padding: 22px 8px 20px 0; border-bottom: 1px solid currentColor; }
+    .moment:nth-child(even) { padding-left: 20px; border-left: 1px solid currentColor; }
+    .moment strong { display: block; font: 400 1.8rem/1 var(--serif); }
+    .moment span { display: block; margin-top: 7px; color: var(--stone); font-size: .7rem; }
+    .texture-image { position: absolute; inset: 0 51% 0 0; margin: 0; overflow: hidden; }
+    .texture-image img { width: 100%; height: 100%; object-fit: cover; object-position: 54% center; }
+    .layered-images { position: absolute; right: 2%; bottom: 7%; width: 43%; height: 53%; }
+    .layered-images figure { position: absolute; margin: 0; overflow: hidden; border: 8px solid var(--paper); }
+    .layered-images img { height: 100%; object-fit: cover; }
+    .layer-one { width: 62%; height: 84%; left: 0; bottom: 0; transform: translateY(calc((1 - var(--progress)) * 55px)) rotate(-4deg); }
+    .layer-one img { object-position: 20% center; }
+    .layer-two { width: 58%; height: 78%; right: 0; top: 0; transform: translateY(calc((1 - var(--progress)) * -42px)) rotate(5deg); }
+    .layer-two img { object-position: 82% 38%; }
 
-    .method { padding: clamp(92px, 12vw, 170px) 0; overflow: hidden; }
-    .method-header { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 64px; }
-    .method-header h2 { margin: 0; font-size: clamp(3.5rem, 7vw, 7rem); line-height: .88; letter-spacing: -.055em; }
-    .scribble { width: 160px; color: var(--terracotta-dark); flex: 0 0 auto; }
-    .steps { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(22,21,19,.28); border-bottom: 1px solid rgba(22,21,19,.28); }
-    .step { min-height: 360px; padding: 44px 42px 54px; border-right: 1px solid rgba(22,21,19,.28); }
-    .step:last-child { border-right: 0; }
-    .step-no { display: block; margin-bottom: 62px; color: var(--terracotta-dark); font-size: .7rem; font-weight: 600; letter-spacing: .16em; }
-    .step h3 { margin-bottom: 22px; font-size: clamp(2.5rem, 4vw, 4rem); line-height: 1; }
-    .step p { max-width: 360px; margin-bottom: 0; color: var(--stone); }
+    .panel-projection { background: var(--terracotta); color: var(--ivory); }
+    .panel-projection .panel-inner { width: 50%; padding-right: clamp(28px,3vw,48px); }
+    .panel-projection h2 { max-width: 610px; margin-bottom: 20px; font-size: clamp(3.1rem, 4.15vw, 4.5rem); }
+    .panel-projection .panel-intro { max-width: 540px; font-size: .86rem; }
+    .projection-frame { position: absolute; right: 4%; top: 19%; width: 46%; height: 66%; overflow: hidden; border: 10px solid var(--ivory); box-shadow: 18px 20px 0 rgba(82,52,35,.25); transform: translateY(calc((1 - var(--progress)) * 58px)) rotate(2deg); }
+    .projection-frame img { position: absolute; inset: 0; height: 100%; object-fit: cover; object-position: 50% 26%; }
+    .projection-frame .projection-after { clip-path: inset(0 0 0 50%); }
+    .projection-divider { position: absolute; z-index: 2; left: 50%; inset-block: 0; width: 2px; background: var(--ivory); }
+    .projection-divider::after { content: "↔"; position: absolute; top: 50%; left: 50%; width: 36px; height: 36px; display: grid; place-items: center; transform: translate(-50%,-50%); border: 1px solid var(--ink); border-radius: 50%; background: var(--ivory); font-size: .62rem; }
+    .projection-caption { position: absolute; z-index: 3; inset: auto 16px 16px; padding: 12px 14px; background: rgba(239,232,221,.92); color: var(--ink); font-size: .64rem; }
+    .panel-cta { display: inline-flex; align-items: center; gap: 18px; width: fit-content; margin-top: 28px; padding: 18px 24px; border: 1px solid var(--ink); background: var(--ivory); box-shadow: 6px 6px 0 var(--ink); color: var(--ink); font-size: .76rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .panel-cta::after { content: "→"; font-size: 1rem; }
+    .research-moments { width: 100%; display: grid; grid-template-columns: 1fr 1fr; margin-top: 28px; border-top: 1px solid currentColor; }
+    .research-moment { min-height: 112px; padding: 20px 16px 18px 0; border-bottom: 1px solid currentColor; }
+    .research-moment:nth-child(even) { padding-left: 22px; border-left: 1px solid currentColor; }
+    .research-moment strong { display: block; font: 400 clamp(1.65rem,2vw,2.15rem)/1 var(--serif); }
+    .research-moment span { display: block; max-width: 230px; margin-top: 8px; font-size: .68rem; line-height: 1.4; }
+    .panel-projection .panel-cta { margin-top: 26px; }
+    .panel-projection .panel-footer { margin-top: 22px; }
 
-    .study { position: relative; padding: clamp(92px, 11vw, 150px) 0; background: var(--terracotta); color: var(--ivory); overflow: hidden; }
-    .study::before { content: ""; position: absolute; width: 420px; height: 420px; right: -160px; top: -190px; border: 1px solid rgba(239,232,221,.45); border-radius: 50%; }
-    .study-grid { position: relative; display: grid; grid-template-columns: .82fr 1.18fr; gap: clamp(52px, 8vw, 120px); align-items: start; }
-    .study h2 { margin-bottom: 28px; font-size: clamp(3.6rem, 6vw, 6.4rem); line-height: .93; letter-spacing: -.05em; }
-    .study-copy p { max-width: 470px; color: #f4ede5; }
-    .study-points { margin: 36px 0 0; padding: 0; list-style: none; }
-    .study-points li { padding: 14px 0; border-top: 1px solid rgba(239,232,221,.35); }
-    .form-shell { padding: clamp(32px, 5vw, 60px); background: var(--ivory); color: var(--ink); box-shadow: 14px 14px 0 var(--ink); }
-    .form-shell .form-label { margin-bottom: 12px; color: var(--terracotta-dark); font-size: .7rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
-    .form-shell h3 { margin-bottom: 18px; font-size: clamp(2.2rem, 4vw, 3.6rem); line-height: 1; }
+    .panel-manifesto { background: var(--ivory); color: var(--ink); }
+    .manifesto-stack { margin-top: 22px; }
+    .manifesto-line { display: grid; grid-template-columns: 90px 1fr; gap: 18px; padding: 18px 0; border-top: 1px solid rgba(22,21,19,.35); }
+    .manifesto-line strong { font: 400 1.65rem/1 var(--serif); }
+    .manifesto-line span { max-width: 400px; color: var(--stone); font-size: .72rem; }
+    .manifesto-brush { position: absolute; right: -6%; bottom: 8%; width: 48%; height: 14%; background: var(--ochre); transform: rotate(-6deg); clip-path: polygon(0 30%,12% 4%,31% 28%,49% 0,67% 24%,84% 6%,100% 27%,94% 81%,71% 68%,50% 98%,25% 72%,2% 90%); }
+
+    .study { min-height: 100vh; display: grid; place-items: center; padding: 110px 0; background: var(--terracotta); color: var(--ivory); }
+    .study-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: clamp(50px,8vw,120px); align-items: center; }
+    .study h2 { max-width: 690px; margin: 0 0 28px; font: 400 clamp(4.2rem,7vw,7.4rem)/.88 var(--serif); letter-spacing: -.06em; }
+    .study-copy > p { max-width: 510px; color: #f3e9df; }
+    .study-list { margin: 34px 0 0; padding: 0; list-style: none; }
+    .study-list li { padding: 13px 0; border-top: 1px solid rgba(239,232,221,.35); }
+    .form-shell { padding: clamp(34px,5vw,62px); background: var(--ivory); color: var(--ink); box-shadow: 16px 16px 0 var(--ink); }
+    .form-shell .eyebrow { color: var(--terracotta-dark); }
+    .form-shell h3 { margin: 8px 0 18px; font: 400 clamp(2.5rem,4.2vw,4rem)/.95 var(--serif); letter-spacing: -.04em; }
     .form-shell p { color: var(--stone); }
-    .embed-placeholder { display: grid; place-items: center; min-height: 280px; margin-top: 30px; padding: 36px; border: 1px dashed var(--terracotta-dark); text-align: center; background: rgba(213,199,182,.28); }
-    .embed-placeholder strong { display: block; margin-bottom: 8px; font-family: var(--serif); font-size: 1.7rem; font-weight: 400; }
-    .embed-placeholder span { display: block; max-width: 390px; color: var(--stone); font-size: .9rem; }
-
-    footer { padding: 34px 0; background: var(--ink); color: var(--ivory); }
-    .footer-inner { display: flex; justify-content: space-between; gap: 24px; align-items: center; }
-    footer p { margin: 0; color: #bcb2a7; font-size: .76rem; }
-    footer .brand { font-size: 1rem; }
-
-    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .55s ease, transform .55s ease; }
-    .reveal.visible { opacity: 1; transform: none; }
+    .fillout-embed { width: 100%; min-height: 500px; margin-top: 28px; overflow: hidden; background: var(--ivory); }
+    .eyebrow { margin: 0 0 14px; color: var(--ochre); font-size: .64rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+    footer { padding: 28px 0; background: var(--ink); color: var(--ivory); }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    footer p { margin: 0; color: #b9aea3; font-size: .72rem; }
 
     @media (max-width: 900px) {
-      :root { --page: min(100% - 40px, 720px); }
-      .nav { height: 76px; }
-      .nav-cta { min-height: 44px; padding-inline: 14px; font-size: .7rem; }
-      .hero { min-height: auto; grid-template-columns: 1fr; }
-      .hero-copy { min-height: 570px; padding: 72px 24px 78px; }
-      h1 { font-size: clamp(3.7rem, 15vw, 5.8rem); }
-      .hero-art { min-height: 620px; }
-      .vision { grid-template-columns: 1fr; }
-      .vision-image { min-height: 520px; }
-      .vision-copy { padding: 78px 24px 88px; }
-      .app-grid { grid-template-columns: 1fr; }
-      .device-stage { min-height: 720px; }
-      .steps { grid-template-columns: 1fr; }
-      .step { min-height: 0; border-right: 0; border-bottom: 1px solid rgba(22,21,19,.28); }
-      .step:last-child { border-bottom: 0; }
-      .step-no { margin-bottom: 36px; }
+      :root { --page: calc(100% - 40px); }
+      .topbar { height: 66px; grid-template-columns: 1fr auto; padding: 0 20px; }
+      .top-status { display: none; }
+      .hero { height: auto; }
+      .hero-stage { position: relative; min-height: 900px; height: 100svh; }
+      .hero-kicker { top: 90px; left: 20px; }
+      .hero-title { top: 15vh; left: 20px; width: calc(100% - 40px); font-size: clamp(3.15rem,13vw,5.4rem); }
+      .hero-phone { right: 50%; width: min(76vw,380px); height: 62vh; bottom: -14vh; transform: translateX(50%); }
+      .hero-copy { left: 20px; right: 20px; top: 48vh; max-width: 540px; }
+      .hero-scroll { display: none; }
+      .brush-a { width: 54vw; top: 47vh; }
+      .brush-b { width: 48vw; }
+
+      .deck-wrap { height: auto; }
+      .deck-stage { position: relative; height: auto; overflow: visible; }
+      .deck-label, .deck-count { display: none; }
+      .deck { position: relative; }
+      .panel { position: relative; width: 100%; min-width: 0; min-height: 86svh; height: auto; transform: none !important; box-shadow: none; border-right: 0; border-bottom: 1px solid rgba(22,21,19,.24); }
+      .panel-inner { min-height: 86svh; padding: 84px 20px 34px; }
+      .panel h2 { font-size: clamp(3.5rem,15vw,5.2rem); }
+      .vision-image { right: -22%; width: 82%; height: 52%; opacity: .6; }
+      .moments { max-width: 540px; }
+      .layered-images { position: relative; right: auto; bottom: auto; width: 100%; height: 320px; margin-top: 38px; }
+      .panel-projection .panel-inner { width: 100%; padding-bottom: 610px; }
+      .panel-moments .panel-inner { width: 100%; }
+      .panel-vision .panel-inner { width: 100%; padding-bottom: 640px; }
+      .panel-vision .hero-phone { right: 50%; bottom: 50px; width: min(76vw,380px); height: 560px; transform: translateX(50%); }
+      .phone-hint { display: none; }
+      .panel-crown { width: 82px; }
+      .crown-one, .crown-three { left: 20px; bottom: 18px; }
+      .crown-two { right: 20px; bottom: 62px; }
+      .projection-frame { top: auto; bottom: 70px; right: 50%; width: min(82vw,430px); height: 500px; transform: translateX(50%) rotate(1deg); }
+      .panel-moments .panel-inner { width: 100%; margin-left: 0; padding-bottom: 560px; }
+      .texture-image { inset: auto 20px 50px; height: 470px; }
+      .research-moments { width: 100%; margin-top: 38px; }
+      .panel-projection .panel-intro { max-width: 540px; }
+      .manifesto-brush { width: 72%; }
       .study-grid { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 560px) {
-      :root { --page: calc(100% - 40px); }
-      .brand { font-size: 1rem; }
-      .nav-cta { padding-inline: 12px; }
-      .hero-copy { min-height: 510px; }
-      .hero-art { min-height: 500px; }
-      .crown { width: 54px; right: 20px; top: 20px; }
-      .vision-image { min-height: 420px; }
-      .device-stage { min-height: 650px; }
-      .phone { box-shadow: 14px 16px 0 rgba(82,52,35,.45); }
-      .screen { min-height: 570px; }
-      .method-header { align-items: start; flex-direction: column; }
-      .scribble { width: 120px; }
-      .step { padding-inline: 12px; }
+    @media (max-width: 520px) {
+      .top-cta { padding-inline: 11px; font-size: .61rem; }
+      .brand { font-size: .98rem; }
+      .hero-title { top: 17vh; }
+      .hero-copy { top: 47vh; font-size: .78rem; line-height: 1.45; }
+      .panel-inner { min-height: 92svh; }
+      .panel-moments .panel-inner { padding-bottom: 54px; }
+      .moments { grid-template-columns: 1fr; }
+      .moment:nth-child(even) { padding-left: 0; border-left: 0; }
+      .layered-images { height: 280px; }
+      .panel-projection .panel-inner { padding-bottom: 590px; }
+      .panel-moments .panel-inner { padding-bottom: 500px; }
+      .texture-image { height: 420px; }
+      .research-moments { grid-template-columns: 1fr; }
+      .research-moment:nth-child(even) { padding-left: 0; border-left: 0; }
+      .projection-frame { height: 470px; }
+      .manifesto-line { grid-template-columns: 1fr; gap: 8px; }
+      .study { padding: 90px 0; }
+      .study h2 { font-size: clamp(3.8rem,16vw,5.2rem); }
       .form-shell { box-shadow: 8px 8px 0 var(--ink); }
       .footer-inner { align-items: start; flex-direction: column; }
     }
@@ -182,108 +258,95 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-      .reveal { opacity: 1; transform: none; }
+      .hero-title { transform: none !important; }
+      .hero-phone { transform: none !important; }
+      .hero-simulation { --sim-y: 50%; animation: none !important; }
+      .panel, .layer-one, .layer-two, .projection-frame { transform: none !important; }
+    }
+
+    @media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+      .panel-vision .hero-phone { transform: translateX(50%) !important; }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#contenu">Aller au contenu</a>
-
-  <header class="container">
-    <nav class="nav" aria-label="Navigation principale">
-      <a class="brand" href="#">CROWN ON ME</a>
-      <a class="nav-cta" href="#etude">Participer à l’étude</a>
-    </nav>
+  <div class="scroll-meter" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#">CROWN ON ME</a>
+    <span class="top-status">Étude du parcours capillaire</span>
+    <a class="top-cta" href="#etude">Participer à l’étude</a>
   </header>
 
   <main id="contenu">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow">Projet de recherche · Cheveux texturés</p>
-        <h1 id="hero-title">Et si votre parcours capillaire était enfin pensé dans son ensemble&nbsp;?</h1>
-        <p>Crown On Me est un projet en recherche consacré aux décisions capillaires des femmes aux cheveux texturés. Nous voulons comprendre vos expériences avant de construire la solution.</p>
-        <div><a class="button" href="#etude">Participer à l’étude</a></div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <img src="assets/portrait-hero.png" alt="">
-        <svg class="crown" viewBox="0 0 100 86" fill="none" aria-hidden="true">
-          <path d="M12 62 7 18l27 24L50 7l17 35 27-24-7 44H12Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
-          <path d="M14 72c22-7 49-7 73 0M18 80c23-5 44-5 66 0" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        </svg>
-      </div>
-    </section>
-
-    <section class="vision" id="vision" aria-labelledby="vision-title">
-      <div class="vision-image reveal"><img src="assets/portrait-vision.png" alt="Portrait de profil d’une femme noire portant une coiffure texturée et tressée."></div>
-      <div class="vision-copy reveal">
-        <p class="eyebrow">Pourquoi cette étude ?</p>
-        <h2 id="vision-title">Nos textures sont notre langage. Nos expériences doivent être entendues.</h2>
-        <p>Comprendre ses cheveux, choisir une coiffure, préparer un rendez-vous ou entretenir ses résultats demande souvent de naviguer entre des conseils dispersés, des images difficiles à interpréter et des expériences qui restent individuelles.</p>
-        <p>Cette étude cherche à comprendre ce qui vous aide réellement, ce qui vous manque et les moments où vos décisions deviennent les plus difficiles.</p>
-      </div>
-    </section>
-
-    <section class="app-section" id="application" aria-labelledby="app-title">
-      <div class="container app-grid">
-        <div class="app-copy reveal">
-          <p class="eyebrow">Notre terrain de recherche</p>
-          <h2 id="app-title">Quatre moments à explorer.</h2>
-          <p>Nous souhaitons comprendre comment vous prenez vos décisions tout au long de votre parcours capillaire — sans présumer de la solution à construire.</p>
-          <ul class="research-moments">
-            <li><strong>Comprendre</strong><span>Connaître ses cheveux et leurs besoins.</span></li>
-            <li><strong>Choisir</strong><span>Trouver une coiffure, une routine ou un produit.</span></li>
-            <li><strong>Échanger</strong><span>Partager ses envies et se faire comprendre.</span></li>
-            <li><strong>Entretenir</strong><span>Prendre soin de ses cheveux dans la durée.</span></li>
-          </ul>
-          <p class="app-note">Ces pistes ne constituent pas encore une solution. Vos réponses nous aideront à identifier celles qui méritent d’être développées.</p>
-        </div>
-        <div class="device-stage reveal" aria-label="Représentation d’une piste de recherche Crown On Me">
-          <span class="prototype-tag">PISTE À EXPLORER</span>
-          <div class="phone" aria-hidden="true">
-            <div class="screen">
-              <div class="screen-top">
-                <span>CROWN ON ME · RECHERCHE</span>
-                <svg class="mini-crown" viewBox="0 0 100 70" fill="none"><path d="M12 55 7 15l27 22L50 6l17 31 27-22-7 40H12Z" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/></svg>
-              </div>
-              <p class="screen-kicker">Une hypothèse parmi d’autres</p>
-              <h3>Et si l’on pouvait mieux se projeter&nbsp;?</h3>
-              <p>Une référence visuelle pourrait-elle faciliter l’échange avant un rendez-vous&nbsp;?</p>
-              <div class="hair-map"><span class="projection-handle">↔</span></div>
-              <div class="signal-list">
-                <div class="signal"><span>Comprendre</span><span>01</span></div>
-                <div class="signal"><span>Choisir</span><span>02</span></div>
-                <div class="signal"><span>Échanger</span><span>03</span></div>
-                <div class="signal"><span>Entretenir</span><span>04</span></div>
+    <section class="deck-wrap" aria-label="Présentation de l’étude Crown On Me">
+      <div class="deck-stage">
+        <p class="deck-label">Le parcours de l’étude</p>
+        <span class="deck-count" aria-hidden="true">01 — 03</span>
+        <div class="deck">
+          <article class="panel panel-vision">
+            <div class="panel-inner">
+              <span class="panel-no">01 · Pourquoi cette étude ?</span>
+              <h2>Et si votre parcours capillaire était enfin pensé <span class="accent">dans son ensemble&nbsp;?</span></h2>
+              <p class="fragmented-title">Le parcours reste fragmenté</p>
+              <p class="frictions-intro">Aujourd’hui, chaque décision demande encore de composer avec&nbsp;:</p>
+              <ul class="frictions">
+                <li>Des conseils dispersés.</li>
+                <li>Des images difficiles à interpréter.</li>
+                <li>Des expériences qui restent individuelles.</li>
+              </ul>
+              <p class="project-note"><strong>Crown On Me est un projet en recherche</strong> consacré aux décisions capillaires des femmes aux cheveux texturés. Nous voulons comprendre vos expériences avant de construire la solution.</p>
+            </div>
+            <span class="phone-hint" aria-hidden="true">Une piste parmi d’autres</span>
+            <span class="panel-crown crown-one" aria-hidden="true"></span>
+            <div class="hero-phone" aria-label="Représentation conceptuelle d’une piste de simulation">
+              <div class="hero-screen">
+                <div class="hero-screen-top"><span>CROWN ON ME</span><span>RECHERCHE</span></div>
+                <h2>Et si l’on pouvait mieux se projeter&nbsp;?</h2>
+                <p>Une piste visuelle pour préparer l’échange.</p>
+                <div class="hero-simulation" data-simulation aria-label="Comparaison interactive entre deux coiffures">
+                  <img src="assets/portrait-hero.png" alt="">
+                  <img class="projected" src="assets/portrait-projection.png" alt="">
+                  <span class="hero-simulation-line"></span>
+                </div>
+                <div class="hero-screen-foot"><span>Piste à explorer</span><span>01 / 04</span></div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </section>
+          </article>
 
-    <section class="method" aria-labelledby="method-title">
-      <div class="container">
-        <div class="method-header reveal">
-          <h2 id="method-title">Créer.<br>Partager.<br>Impacter.</h2>
-          <svg class="scribble" viewBox="0 0 220 90" fill="none" aria-hidden="true">
-            <path d="M6 49c38-19 93-25 201-18M18 66c49-13 112-15 182-7" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="steps">
-          <article class="step reveal">
-            <span class="step-no">01 — CRÉER</span>
-            <h3>Créer</h3>
-            <p>Imaginer une solution à partir des expériences réelles — pas à partir d’un catalogue.</p>
+          <article class="panel panel-moments">
+            <div class="panel-inner">
+              <span class="panel-no">02 · Notre vision</span>
+              <h2>Nos textures sont notre langage.</h2>
+              <h3 class="vision-subtitle">Nos expériences doivent être entendues.</h3>
+              <p class="vision-copy">Les cheveux texturés portent des histoires, des identités et des cultures. Pourtant, les expériences existantes ne représentent pas toujours leur diversité ni les besoins des femmes concernées.</p>
+              <p class="vision-copy">Crown On Me veut construire une expérience plus juste, personnelle et valorisante, au croisement de la technologie, de la beauté et de la culture.</p>
+            </div>
+            <figure class="texture-image"><img src="assets/portrait-vision.png" alt="Portrait d’une femme aux cheveux texturés portant une coiffure tressée."></figure>
+            <span class="panel-crown crown-two" aria-hidden="true"></span>
           </article>
-          <article class="step reveal">
-            <span class="step-no">02 — PARTAGER</span>
-            <h3>Partager</h3>
-            <p>Consigner ce qui fonctionne et le rendre lisible par d’autres. Un savoir qui ne circule pas se perd à chaque génération.</p>
-          </article>
-          <article class="step reveal">
-            <span class="step-no">03 — IMPACTER</span>
-            <h3>Impacter</h3>
-            <p>Constituer, ensemble, la référence qui n’a jamais été écrite pour nos textures.</p>
+
+          <article class="panel panel-projection">
+            <div class="panel-inner">
+              <span class="panel-no">03 · Pourquoi votre participation compte</span>
+              <h2>Quatre moments à comprendre avec vous.</h2>
+              <p class="panel-intro">Nous souhaitons comprendre comment vous prenez vos décisions tout au long de votre parcours capillaire, sans présumer de la solution à construire.</p>
+              <div class="research-moments">
+                <div class="research-moment"><strong>Comprendre</strong><span>Connaître ses cheveux et leurs besoins.</span></div>
+                <div class="research-moment"><strong>Choisir</strong><span>Trouver une coiffure, une routine ou un produit adapté.</span></div>
+                <div class="research-moment"><strong>Échanger</strong><span>Partager ses envies et se faire comprendre.</span></div>
+                <div class="research-moment"><strong>Entretenir</strong><span>Prendre soin de ses cheveux dans la durée.</span></div>
+              </div>
+              <a class="panel-cta" href="#etude">Je participe à l’étude</a>
+              <p class="panel-footer">Partager votre vécu, c’est contribuer à une solution plus juste et plus utile.</p>
+            </div>
+            <div class="projection-frame" aria-label="Effet conceptuel de comparaison avant et projection">
+              <img src="assets/portrait-hero.png" alt="Portrait servant à illustrer une hypothèse de projection visuelle.">
+              <img class="projection-after" src="assets/portrait-projection.png" alt="">
+              <span class="projection-divider" aria-hidden="true"></span>
+              <span class="projection-caption">Une hypothèse à questionner parmi d’autres.</span>
+            </div>
+            <span class="panel-crown crown-three" aria-hidden="true"></span>
           </article>
         </div>
       </div>
@@ -291,28 +354,23 @@
 
     <section class="study" id="etude" aria-labelledby="study-title">
       <div class="container study-grid">
-        <div class="study-copy reveal">
+        <div class="study-copy">
           <p class="eyebrow">Étude Crown On Me</p>
-          <h2 id="study-title">Votre expérience peut orienter la suite.</h2>
+          <h2 id="study-title">À vous de prendre la parole.</h2>
           <p>En répondant à cette étude, vous nous aidez à identifier les problèmes prioritaires, à challenger nos hypothèses et à éviter de construire une solution déconnectée de vos besoins.</p>
-          <ul class="study-points">
+          <ul class="study-list">
             <li>Partager votre vécu</li>
             <li>Faire entendre vos besoins</li>
-            <li>Contribuer à Crown On Me</li>
+            <li>Contribuer aux prochaines étapes</li>
           </ul>
         </div>
-        <div class="form-shell reveal" id="formulaire">
-          <p class="form-label">Le questionnaire</p>
-          <h3>À vous de prendre la parole.</h3>
-          <p>Le questionnaire Crown On Me sera intégré dans cet espace.</p>
-
-          <!-- FORM EMBED START — remplacer ce bloc par le code du formulaire -->
-          <div class="embed-placeholder" role="status">
-            <div>
-              <strong>Questionnaire à venir</strong>
-              <span>Partagez votre expérience et contribuez à orienter les prochaines étapes de Crown On Me.</span>
-            </div>
-          </div>
+        <div class="form-shell" id="formulaire">
+          <p class="eyebrow">Le questionnaire</p>
+          <h3>Votre expérience peut tout changer.</h3>
+          <p>Partagez votre expérience et contribuez à orienter la suite de Crown On Me.</p>
+          <!-- FORM EMBED START -->
+          <div class="fillout-embed" style="width:100%;height:500px;" data-fillout-id="cB8M3YqhFous" data-fillout-embed-type="standard" data-fillout-inherit-parameters data-fillout-dynamic-resize></div>
+          <script src="https://server.fillout.com/embed/v1/"></script>
           <!-- FORM EMBED END -->
         </div>
       </div>
@@ -320,23 +378,79 @@
   </main>
 
   <footer>
-    <div class="container footer-inner">
-      <a class="brand" href="#">CROWN ON ME</a>
-      <p>Beauté. Culture. Expression de soi.</p>
-    </div>
+    <div class="container footer-inner"><a class="brand" href="#">CROWN ON ME</a><p>Beauté. Culture. Expression de soi.</p></div>
   </footer>
 
   <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
+    (() => {
+      const root = document.documentElement;
+      const deckWrap = document.querySelector('.deck-wrap');
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      const mobile = matchMedia('(max-width: 900px)');
+      let target = 0;
+      let current = 0;
+      let raf = 0;
 
-    document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+      const simulations = document.querySelectorAll('[data-simulation]');
+      const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+
+      simulations.forEach((simulation) => {
+        const moveDivider = (event) => {
+          const bounds = simulation.getBoundingClientRect();
+          const position = clamp((event.clientY - bounds.top) / bounds.height, .08, .92) * 100;
+          simulation.dataset.interacting = 'true';
+          simulation.style.setProperty('--sim-y', `${position}%`);
+        };
+        simulation.addEventListener('pointermove', moveDivider);
+        simulation.addEventListener('pointerleave', () => {
+          simulation.dataset.interacting = 'false';
+          simulation.style.removeProperty('--sim-y');
+        });
+      });
+
+      function measure() {
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+        const global = clamp(scrollY / maxScroll);
+        root.style.setProperty('--progress', global.toFixed(4));
+
+        if (!mobile.matches && !reduceMotion.matches) {
+          const start = deckWrap.offsetTop;
+          const length = Math.max(1, deckWrap.offsetHeight - innerHeight);
+          target = clamp((scrollY - start) / length);
+        } else {
+          target = 0;
+        }
+      }
+
+      function render() {
+        current += (target - current) * 0.085;
+        if (Math.abs(target - current) < 0.0001) current = target;
+
+        if (!reduceMotion.matches) {
+          const scanPosition = 50 - Math.cos((performance.now() % 5800) / 5800 * Math.PI * 2) * 23;
+          simulations.forEach((simulation) => {
+            if (simulation.dataset.interacting !== 'true') simulation.style.setProperty('--sim-y', `${scanPosition}%`);
+          });
+        }
+
+        if (!mobile.matches && !reduceMotion.matches) {
+          const panels = document.querySelectorAll('.panel');
+          const secondProgress = clamp(current * 2);
+          const thirdProgress = clamp((current - .5) * 2);
+          panels[1].style.setProperty('--panel-x', `${78 - secondProgress * 67}vw`);
+          panels[2].style.setProperty('--panel-x', `${89 - thirdProgress * 67}vw`);
+          document.querySelector('.deck-count').textContent = `${String(Math.min(3, Math.floor(current * 2.01) + 1)).padStart(2,'0')} — 03`;
+        }
+        raf = requestAnimationFrame(render);
+      }
+
+      addEventListener('scroll', measure, { passive: true });
+      addEventListener('resize', measure, { passive: true });
+      mobile.addEventListener('change', measure);
+      reduceMotion.addEventListener('change', measure);
+      measure();
+      raf = requestAnimationFrame(render);
+    })();
   </script>
 </body>
 </html>
