@@ -423,7 +423,6 @@
       .fillout-embed { min-height: 500px; }
 
       .mobile-scenes .panel .panel-inner,
-      .mobile-scenes .panel .hero-phone,
       .mobile-scenes .panel .texture-image,
       .mobile-scenes .panel .projection-frame,
       .mobile-scenes .panel .phone-hint {
@@ -432,11 +431,9 @@
         transition: opacity .85s cubic-bezier(.2,.72,.2,1), transform 1s cubic-bezier(.2,.72,.2,1);
       }
       .mobile-scenes .panel.is-inview .panel-inner,
-      .mobile-scenes .panel.is-inview .hero-phone,
       .mobile-scenes .panel.is-inview .texture-image,
       .mobile-scenes .panel.is-inview .projection-frame,
       .mobile-scenes .panel.is-inview .phone-hint { opacity: 1; transform: translateY(0); }
-      .mobile-scenes .panel.is-inview .hero-phone,
       .mobile-scenes .panel.is-inview .texture-image,
       .mobile-scenes .panel.is-inview .projection-frame { transition-delay: .16s; }
       .mobile-scenes .panel.is-inview .phone-hint { transform: rotate(-2deg); transition-delay: .08s; }
@@ -487,6 +484,104 @@
       .form-shell { padding: 26px 16px; box-shadow: 6px 6px 0 var(--ink); }
       .form-shell h3 { font-size: clamp(2.4rem, 12vw, 3.6rem); }
       footer { padding-bottom: max(28px, env(safe-area-inset-bottom)); }
+    }
+
+    /* V29 — vertical mobile theatre: the three panels keep their editorial staging. */
+    @media (max-width: 900px) {
+      .deck-count {
+        display: flex;
+        position: sticky;
+        z-index: 40;
+        top: 82px;
+        width: max-content;
+        height: 28px;
+        margin-left: auto;
+        margin-right: 18px;
+        margin-bottom: -28px;
+        padding: 0 10px;
+        border: 1px solid rgba(22,21,19,.24);
+        border-radius: 999px;
+        background: rgba(239,232,221,.9);
+        color: var(--ink);
+        backdrop-filter: blur(8px);
+        align-items: center;
+        justify-content: center;
+        font-size: .72rem;
+        line-height: 1;
+        letter-spacing: .12em;
+        pointer-events: none;
+      }
+      .panel {
+        position: relative;
+        top: auto;
+        margin-top: 0;
+        min-height: calc(100svh - 66px);
+        border-radius: 30px 30px 0 0;
+        box-shadow: 0 -16px 38px rgba(22,21,19,.16);
+      }
+      .panel + .panel { margin-top: -30px; }
+      .panel::after {
+        content: "";
+        position: absolute;
+        z-index: 20;
+        top: 12px;
+        left: 50%;
+        width: 42px;
+        height: 2px;
+        border-radius: 2px;
+        background: currentColor;
+        opacity: .28;
+        transform: translateX(-50%);
+      }
+
+      .panel-vision .hero-phone {
+        width: min(84vw, 340px);
+        height: min(66svh, 550px);
+        min-height: 480px;
+        margin-top: 44px;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition: transform .9s cubic-bezier(.2,.72,.2,1), box-shadow .9s ease;
+      }
+      .mobile-scenes .panel-vision:not(.is-inview) .hero-phone { transform: translateY(22px); }
+      .mobile-scenes .panel-vision.is-inview .hero-phone { transform: translateY(0); box-shadow: 18px 18px 0 rgba(159,90,47,.26); }
+      .phone-hint { margin-top: 14px; margin-bottom: 8px; }
+      .tech-grid { right: -25%; width: 150%; height: 720px; }
+      .tech-grid::after, .orbit-signal { left: 50%; width: min(94vw, 470px); }
+      .orbit-secondary { left: 50%; width: min(106vw, 530px); }
+      .tech-grid::before { -webkit-mask-image: radial-gradient(circle at 50% 56%, #000 0 36%, transparent 75%); mask-image: radial-gradient(circle at 50% 56%, #000 0 36%, transparent 75%); }
+      .orbit-node--one { left: 50%; top: 10%; }
+      .orbit-node--two { right: 2%; top: 50%; }
+      .orbit-node--three { left: 50%; bottom: 2%; }
+      .orbit-node--four { left: 2%; top: 50%; }
+      .phone-brackets { width: min(90vw, 380px); height: min(70svh, 580px); }
+
+      .mobile-scenes .panel .panel-inner > * {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity .65s ease, transform .8s cubic-bezier(.2,.72,.2,1);
+      }
+      .mobile-scenes .panel.is-inview .panel-inner > * { opacity: 1; transform: translateY(0); }
+      .mobile-scenes .panel.is-inview .panel-inner > :nth-child(2) { transition-delay: .08s; }
+      .mobile-scenes .panel.is-inview .panel-inner > :nth-child(3) { transition-delay: .16s; }
+      .mobile-scenes .panel.is-inview .panel-inner > :nth-child(4) { transition-delay: .24s; }
+      .mobile-scenes .panel.is-inview .panel-inner > :nth-child(n+5) { transition-delay: .3s; }
+      .texture-image img, .projection-frame img { transform: scale(1.07); transition: transform 1.35s cubic-bezier(.2,.72,.2,1); }
+      .panel.is-inview .texture-image img, .panel.is-inview .projection-frame img { transform: scale(1); }
+    }
+
+    @media (max-width: 520px) {
+      .panel-vision .hero-phone {
+        width: min(83vw, 340px);
+        height: 540px;
+        min-height: 0;
+      }
+      .tech-grid { right: -32%; width: 164%; height: 680px; }
+      .tech-grid::after, .orbit-signal { width: 96vw; }
+      .orbit-secondary { width: 110vw; }
+      .phone-brackets { width: 90vw; height: 565px; }
+      .orbit-node { font-size: .46rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -716,6 +811,7 @@
         document.body.classList.toggle('mobile-scenes', mobile.matches && !reduceMotion.matches);
         editorialPanels.forEach((panel) => panel.classList.remove('is-inview'));
         if (!mobile.matches || reduceMotion.matches) return;
+        editorialPanels[0]?.classList.add('is-inview');
         sceneObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) entry.target.classList.add('is-inview');
@@ -787,6 +883,13 @@
           panels[1].style.setProperty('--panel-x', `${78 - secondProgress * 67}vw`);
           panels[2].style.setProperty('--panel-x', `${89 - thirdProgress * 67}vw`);
           document.querySelector('.deck-count').textContent = `${String(Math.min(3, Math.floor(current * 2.01) + 1)).padStart(2,'0')} — 03`;
+        } else if (mobile.matches) {
+          const panels = [...document.querySelectorAll('.panel')];
+          const activePanel = panels
+            .map((panel, index) => ({ index, distance: Math.abs(panel.getBoundingClientRect().top - 66), bottom: panel.getBoundingClientRect().bottom }))
+            .filter((item) => item.bottom > 90)
+            .sort((a, b) => a.distance - b.distance)[0];
+          if (activePanel) document.querySelector('.deck-count').textContent = `${String(activePanel.index + 1).padStart(2,'0')} / 03`;
         }
         raf = requestAnimationFrame(render);
       }
